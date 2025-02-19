@@ -2,8 +2,9 @@ package models;
 
 import lombok.Getter;
 import lombok.Builder;
-import lombok.Singular;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,5 +41,18 @@ public class Blog {
                 .flatMap(person -> posts.stream().filter(post -> post.getSAuthorId().equals(person.getSId())))
                 .map(BlogPost::getSId)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Reads a JSON file and converts it into a list of objects.
+     */
+    public static <T> List<T> readJsonFile(String filePath, Class<T[]> clazz) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return List.of(objectMapper.readValue(new File(filePath), clazz));
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + filePath);
+            return List.of();
+        }
     }
 }
